@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Land use</title>
+  <title>MatMap</title>
   <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
   <link href="https://api.mapbox.com/mapbox-gl-js/v2.4.1/mapbox-gl.css" rel="stylesheet">
   <script src="https://api.mapbox.com/mapbox-gl-js/v2.4.1/mapbox-gl.js"></script>
@@ -19,7 +19,7 @@
     }
     #panel {
       background: white; 
-      width: 400px; 
+      width: 300px; 
       border: 1px solid rgba(0,0,0,0.05);
       position: absolute;
       right : 16px;
@@ -55,8 +55,8 @@
     .mapboxgl-popup-content{
       font-size: 13px;
       color: rgba(0,0,0,0.5);
-      min-width: 150px;
-      max-width: 350px;
+      min-width: 250px;
+      max-width: 500px;
       box-shadow: 0 0 4px 0 rgba(0,0,0,0.5);
     } 
 
@@ -72,47 +72,69 @@
   <div id="map"></div>
   
   <div id = "panel">
-    <h4>Mapping Urban Data</h4>
+    <h4>PARIS ROOF MATERIAL DATA</h4>
     <ul>
-      <li><span style="background: #F9EDDB;"></span> One & Two Family Buildings </li>
-      <li><span style="background: #F6D9CB;"></span> Multi-Family Walk-Up Buildings </li>
-      <li><span style="background: #F6D9CB;"></span> Multi-Family Elevator Buildings </li>
-      <li><span style="background: #F1B89C;"></span> Mixed Residential & Commercial Buildings </li>
-      <li><span style="background: #DF7649;"></span> Commercial & Office Buildings </li>
-      <li><span style="background: #A9AECA;"></span> Industrial & Manufacturing </li>
-      <li><span style="background: #BEC6CC;"></span> Transportation & Utility </li> 
-      <li><span style="background: #BDE7F4;"></span> Public Facilities & Institutions </li>
-      <li><span style="background: #A3D393;"></span> Open Space & Outdoor Recreation </li>
-      <li><span style="background: #8DA2B4;"></span> Parking Facilities </li>
-      <li><span style="background: #E4E4E4;"></span> Vacant Land </li>
+      <li><span style="background: #cf4f4f;"></span> Roof Tile </li>
+      <li><span style="background: #f7e0ce;"></span> Zinc </li>
+      <li><span style="background: #f6ac93;"></span> Slate </li>
+      <li><span style="background: #93a5b9 ;"></span> Concrete flat roof / Concrete Terrac </li>
+      <li><span style="background: #a3d393;"></span> Rooftop garden </li>
       <li><span style="background: #F9F9F9; border:1px solid #ccc; box-sizing: border-box;"></span> No Data </li>
     </ul>
   </div>
 
 
   <script>
-    var landUseNames = {
-      '01' : 'One & Two Family Buildings',
-      '02' : 'Multi-Family Walk-Up Buildings ',
-      '03' : 'Multi-Family Elevator Buildings',
-      '04' : 'Mixed Residential & Commercial Buildings',
-      '05' : 'Commercial & Office Buildings ',
-      '06' : 'Industrial & Manufacturing ',
-      '07' : 'Transportation & Utility',
-      '08' : 'Public Facilities & Institutions',
-      '09' : 'Open Space & Outdoor Recreation',
-      '10' : ' Parking Facilities',
-      '11' : 'Vacant Land'
+    var TypeMorpho = {
+      '1' : 'Individual housing : H < 10m & floor space between 3 and 190m²',
+      '2' : 'Collective building of less than 3 floors : H < 10m & floor space between 190m² and 500m²',
+      '3' : 'Collective building of less than 3 floors : H < 10m & floor space between 500m² and 1000m²',
+      '4' : 'Collective building of more than 3 floors : 10m =< H =< 37m & floor space between < 1000m²',
+      '5' : 'Housing, office and business complex of more than 6 floors : 10m =< H =< 37m & floor space between < 1000m²',
+      '6' : 'Housing, office and business complex of less than 6 floors : 20m =< H =< 37m & floor space between < 1000m²',
+      '7' : 'Tower and IGH : H >= 37m regardless of the floor area'
+    }
+    
+    var Arrondissements = {
+      '750000001' : 'Borough 1er',
+      '750000002' : 'Borough 2nd',
+      '750000003' : 'Borough 3rd',
+      '750000004' : 'Borough 4th',
+      '750000005' : 'Borough 5th',
+      '750000006' : 'Borough 6th',
+      '750000007' : 'Borough 7th',
+      '750000008' : 'Borough 8th',
+      '750000009' : 'Borough 9th',
+      '750000010' : 'Borough 10th',
+      '750000011' : 'Borough 11th',
+      '750000012' : 'Borough 12th',
+      '750000013' : 'Borough 13th',
+      '750000014' : 'Borough 14th',
+      '750000015' : 'Borough 15th',
+      '750000016' : 'Borough 16th',
+      '750000017' : 'Borough 17th',
+      '750000018' : 'Borough 18th',
+      '750000019' : 'Borough 19th',
+      '750000020' : 'Borough 20th'
+    };
+
+    var ToitdomNames = {
+      '1' : 'Roof Tile',
+      '2' : 'Zinc',
+      '3' : 'Slate',
+      '4' : 'Concrete flat roof / Concrete Terrace',
+      '5' : 'Rooftop garden',
+      '99' : 'No Data '
     };
 
     mapboxgl.accessToken = 'pk.eyJ1Ijoia2tpbWJpYiIsImEiOiJja293NGdhNTYwMm5nMnBvN3ZuZHVjOWFqIn0.ehBnS7YxzHQLJr_6ojqYdg';
     var map = new mapboxgl.Map({
       container: 'map', // container ID
-      style: 'mapbox://styles/kkimbib/cksqgwd991a7518l65v2b1kda', // style URL
-      center: [-73.986402, 40.748041], // starting position [lng, lat]
-      zoom: 13, // starting zoom
-      minZoom:13,
-      maxZoom: 18
+      style: 'mapbox://styles/kkimbib/cksryuvwe2lvu17o70k8puqo8', // style URL
+      center: [2.340,48.863], // starting position [lng, lat]
+      zoom: 11, // starting zoom
+      minZoom:11,
+      maxZoom: 21
     });
 
     //NAVIGATION 
@@ -123,7 +145,7 @@
     map.on('mousemove', function(event){
       //console.log(event);
       if (map.loaded()) {
-        var features = map.queryRenderedFeatures(event.point, {layers: ['lots']
+        var features = map.queryRenderedFeatures(event.point, {layers: ['01_Emprise Bati']
       });
       map.getCanvas().style.cursor = features.length? 'pointer' : ''; 
       }
@@ -135,7 +157,7 @@
 
       var geometry = event.point;
       var parameters = {
-        layers: ['lots']
+        layers: ['01_Emprise Bati']
       };
       var features = map.queryRenderedFeatures(geometry, parameters);
 
@@ -143,29 +165,41 @@
       console.log(lot);
 
       if (features.length > 0){
-        var bbl = lot.properties.BBL || '-';
-        var landUse = landUseNames[lot.properties.LandUse] || '-';
-        var zoneDist = lot.properties.ZoneDist1 || '-';
-        var bldgClass = lot.properties.BldgClass || '-' ;
-        console.log(bbl, landUse, zoneDist, bldgClass);
+        var AnneeConst = lot.properties.an_const || '-';
+        var Area = lot.properties.Shape_Area || '-';
+        var Heightmoyen  = lot.properties.h_moy || '-';
+        var Toitdom = ToitdomNames[lot.properties.c_toitdom] || '-' ;
+        var Borough = Arrondissements[lot.properties.n_sq_ar] || '-' ;
+        var Morpho = TypeMorpho[lot.properties.c_morpho] || '-';
 
+        console.log(AnneeConst, Area, Heightmoyen, Toitdom, Borough, Morpho );
+     
+
+       
         var popup = new mapboxgl.Popup()
           .setLngLat(event.lngLat)
           .setHTML('<dl>' +
-          '<dt> BBL </dt>' + 
-          '<dd>' + bbl + '</dd>' + 
-          '<dt> Land Use </dt>' +
-          '<dd>' + landUse + '</dd>' + 
-          '<dt> Zoning District </dt>' + 
-          '<dd>' + zoneDist + '</dd>' + 
-          '<dt> Building Class </dt>' + 
-          '<dd>' + bldgClass + '</dd>' + 
+          '<dt> Construction year </dt>' + 
+          '<dd>' + AnneeConst + '</dd>' + 
+          '<dt> Area </dt>' +
+          '<dd>' + Area + '</dd>' + 
+          '<dt> Height </dt>' + 
+          '<dd>' + Heightmoyen + '</dd>' + 
+          '<dt> Toiture material </dt>' + 
+          '<dd>' + Toitdom + '</dd>' + 
+          '<dt> Borough </dt>' + 
+          '<dd>' + Borough+ '</dd>' +
+          '<dt> Morphological type </dt>' + 
+          '<dd>' + Morpho + '</dd>' +
           '</dl>')
           .addTo(map);
       }
+
+  
     });
 
   </script>
 
 </body>
 </html>
+
